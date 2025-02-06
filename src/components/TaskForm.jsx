@@ -1,60 +1,58 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { addTask, editTask } from "../redux/taskSlice";
+import { addTask } from "../redux/taskSlice";
 
-const TaskForm = ({ taskToEdit, setTaskToEdit }) => {
-  const [task, setTask] = useState({ taskName: "", description: "", dueDate: "" });
+const TaskForm = () => {
+  const [task, setTask] = useState({ taskName: "", description: "", dueDate: "", status: "Pending" });
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (taskToEdit) {
-      setTask({
-        taskName: taskToEdit.taskName,
-        description: taskToEdit.description,
-        dueDate: taskToEdit.dueDate,
-      });
-    }
-  }, [taskToEdit]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!task.taskName || !task.description) return;
-
-    if (taskToEdit) {
-      dispatch(editTask({ id: taskToEdit.id, updatedTask: task }));
-    } else {
-      dispatch(addTask({ ...task, status: "Pending" }));
-    }
-
-    setTask({ taskName: "", description: "", dueDate: "" });
-    setTaskToEdit(null); 
+    dispatch(addTask({ ...task }));
+    setTask({ taskName: "", description: "", dueDate: "", status: "Pending" });
   };
 
   return (
-    <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
-      <input
-        type="text"
-        placeholder="Task Name"
-        value={task.taskName}
-        onChange={(e) => setTask({ ...task, taskName: e.target.value })}
-        className="border p-2 rounded"
-      />
-      <textarea
-        placeholder="Description"
-        value={task.description}
-        onChange={(e) => setTask({ ...task, description: e.target.value })}
-        className="border p-2 rounded"
-      />
-      <input
-        type="date"
-        value={task.dueDate}
-        onChange={(e) => setTask({ ...task, dueDate: e.target.value })}
-        className="border p-2 rounded"
-      />
-      <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-        {taskToEdit ? "Update Task" : "Add Task"}
-      </button>
-    </form>
+    <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+      <h2 className="text-2xl font-bold text-gray-700 mb-4">Add New Task</h2>
+      <form className="space-y-4" onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Task Name"
+          value={task.taskName}
+          onChange={(e) => setTask({ ...task, taskName: e.target.value })}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+        <textarea
+          placeholder="Description"
+          value={task.description}
+          onChange={(e) => setTask({ ...task, description: e.target.value })}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+        <input
+          type="date"
+          value={task.dueDate}
+          onChange={(e) => setTask({ ...task, dueDate: e.target.value })}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+        <select
+          value={task.status}
+          onChange={(e) => setTask({ ...task, status: e.target.value })}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+        >
+          <option value="Pending">Pending</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Completed">Completed</option>
+        </select>
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300"
+        >
+          Add Task
+        </button>
+      </form>
+    </div>
   );
 };
 
