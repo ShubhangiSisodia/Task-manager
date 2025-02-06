@@ -1,16 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { addTask } from "../redux/taskSlice";
+import { addTask, editTask } from "../redux/taskSlice";
 
-const TaskForm = () => {
+const TaskForm = ({ taskToEdit, setTaskToEdit }) => {
   const [task, setTask] = useState({ taskName: "", description: "", dueDate: "" });
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (taskToEdit) {
+      setTask({
+        taskName: taskToEdit.taskName,
+        description: taskToEdit.description,
+        dueDate: taskToEdit.dueDate,
+      });
+    }
+  }, [taskToEdit]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!task.taskName || !task.description) return;
-    dispatch(addTask({ ...task, status: "Pending" }));
+
+    if (taskToEdit) {
+      dispatch(editTask({ id: taskToEdit.id, updatedTask: task }));
+    } else {
+      dispatch(addTask({ ...task, status: "Pending" }));
+    }
+
     setTask({ taskName: "", description: "", dueDate: "" });
+    setTaskToEdit(null); 
   };
 
   return (
@@ -35,7 +52,7 @@ const TaskForm = () => {
         className="border p-2 rounded"
       />
       <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-        Add Task
+        {taskToEdit ? "Update Task" : "Add Task"}
       </button>
     </form>
   );
